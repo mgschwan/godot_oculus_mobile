@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.6)
 
+option(EnableMRC "Enable Mixed Reality Capture. Requires OVRMrcLib" OFF)
+
 # Default android abi is arm64-v8a
 if (NOT ANDROID_ABI)
     set(ANDROID_ABI "arm64-v8a")
@@ -22,6 +24,10 @@ else ()
     add_definitions(-DNDEBUG)
     set(VRAPI_LIB_BUILD_TYPE Release)
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
+
+if (EnableMRC)
+    add_definitions(-DENABLE_MRC)
+endif (EnableMRC)
 
 if (NOT (ANDROID_STL STREQUAL "c++_shared"))
     set(ANDROID_STL "c++_shared")
@@ -66,6 +72,9 @@ endif (NOT (EXISTS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}))
 # Sets the path to the VrApi containing directory. Update this variable if the api is in another location.
 set(OVR_ROOT_DIR "${CMAKE_SOURCE_DIR}/ovr_sdk_mobile")
 
+set(OVR_MRC_DIR "${CMAKE_SOURCE_DIR}/ovr_sdk_mobile/OVRMrcLib")
+set(OVR_MRC_HEADERS_DIR "${OVR_MRC_DIR}/Include")
+
 # Location to the Godot headers directory. The default location is "${CMAKE_SOURCE_DIR}/godot_headers"
 set(GODOT_HEADERS_DIR "${CMAKE_SOURCE_DIR}/godot_headers")
 ###############################################################################
@@ -104,6 +113,9 @@ set(VRAPI_LIB_PATH "${OVR_ROOT_DIR}/VrApi/Libs/Android/${ANDROID_ABI}/${VRAPI_LI
 add_library(vrapi SHARED IMPORTED GLOBAL)
 set_target_properties(vrapi PROPERTIES IMPORTED_LOCATION ${VRAPI_LIB_PATH})
 
+set(OVR_MRC_LIB_PATH "${OVR_MRC_DIR}/Lib/${ANDROID_ABI}/libOVRMrcLib.so")
+
+
 # Get Sources
 file(GLOB_RECURSE SOURCES src/*.c**)
 file(GLOB_RECURSE HEADERS src/*.h**)
@@ -122,6 +134,7 @@ target_include_directories(${PROJECT_NAME}
         SYSTEM PUBLIC
         ${GODOT_HEADERS_DIR}
         ${OVR_HEADERS_DIR}
+        ${OVR_MRC_HEADERS_DIR}
         )
 
 target_link_libraries(${PROJECT_NAME}
@@ -137,6 +150,14 @@ set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS ${GODOT_LI
 
 # Copy the VrApi shared library to the output directory.
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${VRAPI_LIB_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+
+if (EnableMRC)
+    if (EXISTS ${OVR_MRC_LIB_PATH})
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OVR_MRC_LIB_PATH} $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+    else()
+        message(FATAL_ERROR "Could not find MRC library ${OVR_MRC_LIB_PATH}")
+    endif()
+endif(EnableMRC)
 
 set(BITS 32)
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
