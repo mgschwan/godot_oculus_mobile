@@ -89,7 +89,7 @@ GDCALLINGCONV godot_variant initialize(godot_object *p_instance, void *p_method_
         ovr_mrc_data->ovrm_api->GetVersions(&majorVersion, &minorVersion, &patchVersion);
         ALOGV("OvrMrc: initializing ovrm version %d.%d.%d", majorVersion, minorVersion, patchVersion);
 
-        ovrmResult result_ovrm_initialize = ovr_mrc_data->ovrm_api->Initialize(ovr, (void*)ovr_java, ovr_java->ActivityObject);
+        ovrmResult result_ovrm_initialize = ovr_mrc_data->ovrm_api->Initialize(ovr, ovr_java->Vm, ovr_java->ActivityObject);
 
         if (result_ovrm_initialize != ovrmSuccess) {
             ALOGE("OvrMrc: initialize(): ovrm_Initialize(...) failed with code %d", result_ovrm_initialize);

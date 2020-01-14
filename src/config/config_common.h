@@ -30,7 +30,7 @@ void reset_ovr_config_data_struct(ovr_config_data_struct *ovr_config_data);
 		ovrmobile::OvrMobileSession *ovr_mobile_session = ovr_config_data->ovr_mobile_session; \
 		if (ovr_mobile_session && ovr_mobile_session->is_initialized()) { \
 			ovrMobile* ovr = ovr_mobile_session->get_ovr_mobile_context(); \
-			const ovrJava* ovr_java = ovr_mobile_session->get_ovr_java(); \
+			ovrJava* ovr_java = ovr_mobile_session->get_ovr_java(); \
 			if (ovr && ovr_java) { \
 			  _codeblock_ \
 			} \

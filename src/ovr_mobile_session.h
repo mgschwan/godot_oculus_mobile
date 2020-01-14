@@ -72,7 +72,7 @@ public:
 
 	const OvrMobileController* get_ovr_mobile_controller() const {return ovr_mobile_controller;};
 
-	const ovrJava *get_ovr_java() {
+	ovrJava *get_ovr_java() {
 		return &java;
 	}
 
