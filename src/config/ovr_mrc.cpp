@@ -13,6 +13,7 @@ GDCALLINGCONV void ovr_mrc_destructor(godot_object *p_instance, void *p_method_d
 GDCALLINGCONV godot_variant initialize(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 
 GDCALLINGCONV godot_variant set_mrc_activation_mode(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
+GDCALLINGCONV godot_variant get_mrc_activation_mode(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 
 GDCALLINGCONV godot_variant is_mrc_enabled(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 GDCALLINGCONV godot_variant is_mrc_activated(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
@@ -21,7 +22,6 @@ GDCALLINGCONV godot_variant set_mrc_input_video_buffer_type(godot_object *p_inst
 GDCALLINGCONV godot_variant set_mrc_audio_sample_rate(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 
 GDCALLINGCONV godot_variant update(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
-//GDCALLINGCONV godot_variant get_mrc_activation_mode(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 GDCALLINGCONV godot_variant get_external_camera_count(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
 
 GDCALLINGCONV godot_variant get_external_camera_intrinsics(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args);
@@ -53,6 +53,8 @@ void register_gdnative_mrc(void *p_handle) {
 
    		method.method = &set_mrc_activation_mode;
 		nativescript_api->godot_nativescript_register_method(p_handle, kClassName, "set_mrc_activation_mode", attributes, method);
+   		method.method = &get_mrc_activation_mode;
+		nativescript_api->godot_nativescript_register_method(p_handle, kClassName, "get_mrc_activation_mode", attributes, method);
 
    		method.method = &is_mrc_enabled;
 		nativescript_api->godot_nativescript_register_method(p_handle, kClassName, "is_mrc_enabled", attributes, method);
@@ -159,10 +161,23 @@ GDCALLINGCONV godot_variant set_mrc_activation_mode(godot_object *p_instance, vo
                 ALOGE("OvrMrc: set_mrc_activation_mode(%d) failed with code %d", activationMode, result);
                 api->godot_variant_new_bool(&ret, false);
                 return ret;
+            } else {
+                ALOGV("OvrMrc: set_mrc_activation_mode(%d) called.", activationMode);
             }
 
             api->godot_variant_new_bool(&ret, true);
         }
+    );
+}
+
+GDCALLINGCONV godot_variant get_mrc_activation_mode(godot_object *p_instance, void *p_method_data, void *p_user_data, int p_num_args, godot_variant **p_args) {
+    CHECK_OVR(
+        ovrmMediaMrcActivationMode value = ovrmMediaMrcActivationMode_EnumSize;
+        ovrmResult result = ovrm_GetAPIs()->GetMrcActivationMode(&value);
+        if (result != ovrmSuccess) {
+            ALOGE("OvrMrc: get_mrc_activation_mode() failed with code %d", result);
+        }
+        api->godot_variant_new_int(&ret, value);
     );
 }
 
