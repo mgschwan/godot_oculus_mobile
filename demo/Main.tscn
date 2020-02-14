@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=14 format=2]
 
 [ext_resource path="res://Main.gd" type="Script" id=1]
 [ext_resource path="res://CubeTree.tscn" type="PackedScene" id=2]
@@ -35,6 +35,16 @@ albedo_color = Color( 0.980392, 0.717647, 0.384314, 1 )
 [sub_resource type="CubeMesh" id=6]
 material = SubResource( 5 )
 size = Vector3( 0.02, 0.02, 0.02 )
+
+[sub_resource type="QuadMesh" id=7]
+
+[sub_resource type="ViewportTexture" id=8]
+viewport_path = NodePath("MixedRealityCapture/Viewport")
+
+[sub_resource type="SpatialMaterial" id=9]
+resource_local_to_scene = true
+flags_unshaded = true
+albedo_texture = SubResource( 8 )
 
 [node name="Main" type="Spatial"]
 script = ExtResource( 1 )
@@ -80,3 +90,15 @@ transform = Transform( 1.55405, 0, -1.25894, 0, 2, 0, 1.25894, 0, 1.55405, -2.40
 
 [node name="MixedRealityCapture" type="Spatial" parent="."]
 script = ExtResource( 4 )
+
+[node name="Viewport" type="Viewport" parent="MixedRealityCapture"]
+size = Vector2( 512, 512 )
+render_target_update_mode = 1
+
+[node name="Camera" type="Camera" parent="MixedRealityCapture/Viewport"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 2.3055 )
+
+[node name="MRCPreviewPlane" type="MeshInstance" parent="."]
+transform = Transform( -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 2, -2 )
+mesh = SubResource( 7 )
+material/0 = SubResource( 9 )

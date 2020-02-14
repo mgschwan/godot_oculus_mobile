@@ -438,13 +438,13 @@ GDCALLINGCONV godot_variant encode_mrc_frame(godot_object *p_instance, void *p_m
             ALOGE("OvrMrc: encode_mrc_frame(int textureHandle, double timestamp) requires 3 parameter; got %d", p_num_args);
         } else {
             int textureHandle = api->godot_variant_as_int(p_args[0]);
-            double timestamp = api->godot_variant_as_real(p_args[2]);
+            double timestamp = api->godot_variant_as_int(p_args[2]);
 
             int outSyncId = 0;
             ovrmResult result = ovrm_GetAPIs()->EncodeMrcFrame(&textureHandle, NULL, 0, 2/*audioChannels*/, timestamp, &outSyncId);
             if (result != ovrmSuccess) {
                 ALOGE("OvrMrc: encode_mrc_fram(%d, %f) failed with code %d", textureHandle, timestamp, result);
-                api->godot_variant_new_bool(&ret, false);
+                api->godot_variant_new_int(&ret, 0);
                 return ret;
             }
             api->godot_variant_new_int(&ret, outSyncId);
