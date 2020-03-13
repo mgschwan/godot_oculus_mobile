@@ -48,10 +48,12 @@ func _mrc_update_capture_camera(mrc_camera_id, cam, vp):
 	var v_fov = intrinsics[mrcCameraIntrinsics.FOVPort_UpTan] + intrinsics[mrcCameraIntrinsics.FOVPort_DownTan]
 	
 	cam.fov = rad2deg(h_fov);
-	cam.near = intrinsics[mrcCameraIntrinsics.VirtualNearPlaneDistanceMeters];
-	cam.far = intrinsics[mrcCameraIntrinsics.VirtualFarPlaneDistanceMeters];
+	#cam.near = intrinsics[mrcCameraIntrinsics.VirtualNearPlaneDistanceMeters];
+	#cam.far = intrinsics[mrcCameraIntrinsics.VirtualFarPlaneDistanceMeters];
 	
 	cam.global_transform = extrinsics[mrcCameraExtrinsics.RelativePose];
+	
+	print("cam update: fov = %f near = %f far = %f resX = %d resY = %d" % [cam.fov, cam.near, cam.far, vp.size.x, vp.size.y])
 	
 
 var count = 0;
@@ -78,6 +80,7 @@ func _process(_dt):
 					var timestamp = OS.get_ticks_usec();
 					var texture_id = VisualServer.texture_get_texid(_viewport_back.get_texture());
 					_last_sync_id = ovr_mrc.encode_mrc_frame(texture_id, timestamp);
+					#_last_sync_id = ovr_mrc.encode_mrc_frame_with_dual_texture(texture_id, texture_id, timestamp);
 					
 					print("timestamp = %d; texture_id = %d; _last_sync_id = %d" % [timestamp, texture_id, _last_sync_id]);
 					_mrc_render_toggle = false;

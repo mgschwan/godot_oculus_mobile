@@ -437,16 +437,17 @@ GDCALLINGCONV godot_variant encode_mrc_frame(godot_object *p_instance, void *p_m
         if (p_num_args != 2) {
             ALOGE("OvrMrc: encode_mrc_frame(int textureHandle, double timestamp) requires 3 parameter; got %d", p_num_args);
         } else {
-            int textureHandle = api->godot_variant_as_int(p_args[0]);
-            double timestamp = api->godot_variant_as_int(p_args[2]);
+            ovrmTextureHandle textureHandle = (ovrmTextureHandle)api->godot_variant_as_int(p_args[0]);
+            double timestamp = api->godot_variant_as_int(p_args[1]);
 
             int outSyncId = 0;
             ovrmResult result = ovrm_GetAPIs()->EncodeMrcFrame(&textureHandle, NULL, 0, 2/*audioChannels*/, timestamp, &outSyncId);
             if (result != ovrmSuccess) {
-                ALOGE("OvrMrc: encode_mrc_fram(%d, %f) failed with code %d", textureHandle, timestamp, result);
+                ALOGE("OvrMrc: encode_mrc_fram(%d, %f) failed with code %d", (int)textureHandle, timestamp, result);
                 api->godot_variant_new_int(&ret, 0);
                 return ret;
             }
+            ALOGV("OvrMrc: encode_mrc_fram(%d, %f) -> %d", (int)textureHandle, timestamp, outSyncId);
             api->godot_variant_new_int(&ret, outSyncId);
         }
     );
@@ -458,14 +459,14 @@ GDCALLINGCONV godot_variant encode_mrc_frame_with_dual_texture(godot_object *p_i
         if (p_num_args != 3) {
             ALOGE("OvrMrc: encode_mrc_frame_with_dual_texture(int backgroundTextureHandle, int foregroundTextureHandle, double timestamp) requires 3 parameter; got %d", p_num_args);
         } else {
-            int backgroundTextureHandle = api->godot_variant_as_int(p_args[0]);
-            int foregroundTextureHandle = api->godot_variant_as_int(p_args[1]);
+            ovrmTextureHandle backgroundTextureHandle = (ovrmTextureHandle)api->godot_variant_as_int(p_args[0]);
+            ovrmTextureHandle foregroundTextureHandle = (ovrmTextureHandle)api->godot_variant_as_int(p_args[1]);
             double timestamp = api->godot_variant_as_real(p_args[2]);
 
             int outSyncId = 0;
             ovrmResult result = ovrm_GetAPIs()->EncodeMrcFrameWithDualTextures(&backgroundTextureHandle, &foregroundTextureHandle, NULL, 0, 2/*audioChannels*/, timestamp, &outSyncId);
             if (result != ovrmSuccess) {
-                ALOGE("OvrMrc: encode_mrc_frame_with_dual_texture(%d, %d, %f) failed with code %d", backgroundTextureHandle, foregroundTextureHandle, timestamp, result);
+                ALOGE("OvrMrc: encode_mrc_frame_with_dual_texture(%d, %d, %f) failed with code %d", (int)backgroundTextureHandle, (int)foregroundTextureHandle, timestamp, result);
                 api->godot_variant_new_bool(&ret, false);
                 return ret;
             }
